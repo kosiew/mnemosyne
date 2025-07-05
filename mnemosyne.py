@@ -83,13 +83,36 @@ def show_buckets(
 @app.command()
 def backup(
     db_path: Path = typer.Option(default_db_path, help="Path to the database file"),
-    backup_path: Path = typer.Option(default_db_path.with_name("default_backup.db"), help="Path to save the backup file")
+    backups_folder: Path = typer.Option(default_db_path.parent / "backups", help="Path to the backups folder")
 ):
     """
-    Backup the database to a specified location.
+    Backup the database to the backups folder with a timestamp.
     """
+    backups_folder.mkdir(parents=True, exist_ok=True)
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    backup_path = backups_folder / f"{db_path.stem}-{timestamp}.db"
     shutil.copy(db_path, backup_path)
     print(f"Database backed up to {backup_path}")
+
+@app.command()
+def restore_backup(
+    db_path: Path = typer.Option(default_db_path, help="Path to the database file"),
+    backups_folder: Path = typer.Option(default_db_path.parent / "backups", help="Path to the backups folder")
+):
+    """
+    Restore the database from the latest backup in the backups folder and remove the backup file.
+    """
+    backup_files = sorted(backups_folder.glob(f"{db_path.stem}-*.db"), reverse=True)
+    if not backup_files:
+        print("No backups found to restore.")
+        return
+    latest_backup = backup_files[0]
+    shutil.copy(latest_backup, db_path)
+    print(f"Database restored from {latest_backup} to {db_path}")
+
+    # Remove the backup file
+    latest_backup.unlink()
+    print(f"Backup file {latest_backup} has been removed.")
 
 if __name__ == "__main__":
     app()
