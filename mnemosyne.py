@@ -13,12 +13,16 @@ default_db_path = Path.home() / "Library/CloudStorage/OneDrive-Personal/Library/
 
 @app.command()
 def compress(
-    db_path: Path = typer.Option(default_db_path, help="Path to the database file"),
+    db_path: Path = typer.Option(default=default_db_path, help="Path to the database file"),
     years: int = typer.Option(5, help="Maximum number of years to compress next_rep into")
 ):
     """
     Compress future cards' next_rep to within the next X years (default 5).
+    A backup is created before compressing.
     """
+    # Call the backup command before compressing
+    backup()
+
     current_time = int(time.time())
     max_next_rep = current_time + years * SECONDS_IN_YEAR
 
