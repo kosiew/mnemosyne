@@ -83,7 +83,7 @@ def show_buckets(
 @app.command()
 def backup(
     db_path: Path = typer.Option(default_db_path, help="Path to the database file"),
-    backup_path: Path = typer.Option(Path.home() / "Mnemosyne_backup.db", help="Path to save the backup file")
+    backup_path: Path = typer.Option(default_db_path.with_name("default_backup.db"), help="Path to save the backup file")
 ):
     """
     Backup the database to a specified location.
