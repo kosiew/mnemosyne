@@ -21,7 +21,7 @@ def compress(
     A backup is created before compressing.
     """
     # Call the backup command before compressing
-    backup()
+    backup(db_path=db_path, backups_folder=db_path.parent / "backups")
 
     current_time = int(time.time())
     max_next_rep = current_time + years * SECONDS_IN_YEAR
