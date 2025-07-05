@@ -1,7 +1,7 @@
 # Make sure we use our own custom pyuic5 in order to be able to translate
 # Qt strings:
 
-PYUIC6      := $(PYTHON) ./pyuic6
+PYUIC6      := poetry run python3 ./pyuic6
 
 WIDGETS = ui_main_wdgt.py ui_add_cards_dlg.py \
 	ui_edit_card_dlg.py ui_review_wdgt.py \
