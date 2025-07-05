@@ -35,20 +35,16 @@ def compress(
     cursor.execute(query)
     cards = cursor.fetchall()
 
-    # Update next_rep values proportionally for all cards
+    # Update next_rep values proportionally
     for card_id, next_rep in cards:
-        if next_rep > current_time:
-            # Proportionally compress next_rep to fit within the specified years
+        if next_rep > max_next_rep:
+            # Proportionally compress next_rep to within the specified years
             compressed_next_rep = int(
                 current_time + (next_rep - current_time) * (max_next_rep - current_time) / (next_rep - current_time)
             )
-        else:
-            # If next_rep is in the past, keep it unchanged
-            compressed_next_rep = next_rep
-
-        update_query = "UPDATE cards SET next_rep = ? WHERE id = ?"
-        cursor.execute(update_query, (compressed_next_rep, card_id))
-        print(f"Compressed card {card_id}: next_rep set to {compressed_next_rep}")
+            update_query = "UPDATE cards SET next_rep = ? WHERE id = ?"
+            cursor.execute(update_query, (compressed_next_rep, card_id))
+            print(f"Compressed card {card_id}: next_rep set to {compressed_next_rep}")
 
     # Commit changes and close the connection
     conn.commit()
