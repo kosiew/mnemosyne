@@ -41,6 +41,7 @@ google-trans-new = "^1.1.9"
 pytest = "^7.4.0"
 pytest-timeout = "^2.1.0"
 legacy-cgi = "^2.6"
+typer = "^0.16.0"
 
 [tool.poetry.scripts]
 mnemosyne = 'mnemosyne.pyqt_ui:run'
