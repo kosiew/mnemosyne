@@ -9,6 +9,7 @@ app = typer.Typer()
 
 # Constants
 SECONDS_IN_YEAR = 365 * 24 * 60 * 60  # 1 year in seconds
+SECONDS_IN_DAY = 24 * 60 * 60  # 1 day in seconds
 default_db_path = Path.home() / "Library/CloudStorage/OneDrive-Personal/Library/Mnemosyne/default.db"
 
 @app.command()
@@ -35,16 +36,21 @@ def compress(
     cursor.execute(query)
     cards = cursor.fetchall()
 
-    # Update next_rep values proportionally
-    for card_id, next_rep in cards:
-        if next_rep > max_next_rep:
-            # Proportionally compress next_rep to within the specified years
-            compressed_next_rep = int(
-                current_time + (next_rep - current_time) * (max_next_rep - current_time) / (next_rep - current_time)
-            )
+    # Filter cards with next_rep more than max_next_rep
+    future_cards = [(card_id, next_rep) for card_id, next_rep in cards if next_rep > max_next_rep]
+
+    if future_cards:
+        # Calculate the range for evenly distributing next_rep values
+        start_time = current_time + SECONDS_IN_DAY  # Start from tomorrow
+        end_time = max_next_rep
+        total_days = (end_time - start_time) // (24 * 60 * 60)
+
+        # Evenly distribute next_rep values
+        for index, (card_id, _) in enumerate(future_cards):
+            allocated_next_rep = start_time + (index * (total_days * 24 * 60 * 60) // len(future_cards))
             update_query = "UPDATE cards SET next_rep = ? WHERE id = ?"
-            cursor.execute(update_query, (compressed_next_rep, card_id))
-            print(f"Compressed card {card_id}: next_rep set to {compressed_next_rep}")
+            cursor.execute(update_query, (allocated_next_rep, card_id))
+            print(f"Allocated card {card_id}: next_rep set to {allocated_next_rep}")
 
     # Commit changes and close the connection
     conn.commit()
