@@ -42,17 +42,9 @@ def compress(
             compressed_next_rep = int(
                 current_time + (next_rep - current_time) * (max_next_rep - current_time) / (next_rep - current_time)
             )
-        elif next_rep > current_time:
-            # Proportionally distribute within the range
-            compressed_next_rep = int(
-                current_time + (next_rep - current_time) * (max_next_rep - current_time) / (next_rep - current_time)
-            )
-        else:
-            compressed_next_rep = next_rep
-
-        update_query = "UPDATE cards SET next_rep = ? WHERE id = ?"
-        cursor.execute(update_query, (compressed_next_rep, card_id))
-        print(f"Compressed card {card_id}: next_rep set to {compressed_next_rep}")
+            update_query = "UPDATE cards SET next_rep = ? WHERE id = ?"
+            cursor.execute(update_query, (compressed_next_rep, card_id))
+            print(f"Compressed card {card_id}: next_rep set to {compressed_next_rep}")
 
     # Commit changes and close the connection
     conn.commit()
