@@ -48,9 +48,9 @@ def compress(
         # Evenly distribute next_rep values
         for index, (card_id, _) in enumerate(future_cards):
             allocated_next_rep = start_time + (index * (total_days * 24 * 60 * 60) // len(future_cards))
-            update_query = "UPDATE cards SET next_rep = ? WHERE id = ?"
-            cursor.execute(update_query, (allocated_next_rep, card_id))
-            print(f"Allocated card {card_id}: next_rep set to {allocated_next_rep}")
+            update_query = "UPDATE cards SET next_rep = ?, easiness = ? WHERE id = ?"
+            cursor.execute(update_query, (allocated_next_rep, 1.3, card_id))
+            print(f"Allocated card {card_id}: next_rep set to {allocated_next_rep}, easiness set to 1.3")
 
     # Commit changes and close the connection
     conn.commit()
