@@ -84,9 +84,10 @@ def show_buckets(
             years_ahead = (next_rep - current_time) // SECONDS_IN_YEAR
             buckets[years_ahead] += 1
 
-    # Print the results
-    for year in range(max_years + 1):
-        print(f"Year {year}: {buckets[year]} cards")
+    # Print the results (only buckets with cards)
+    for year in sorted(buckets.keys()):
+        if year <= max_years:
+            print(f"Year {year}: {buckets[year]} cards")
 
     conn.close()
 
