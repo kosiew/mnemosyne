@@ -95,13 +95,34 @@ def show_buckets(
 def extract_cards_by_tag(
     db_path: Path = typer.Option(default=default_db_path, help="Path to the database file"),
     tag: str = typer.Option(..., help="Tag name to filter cards by"),
+    columns: str = typer.Option("all", help="Comma-separated list of card columns to include, or 'all'."),
     output_file: Path = typer.Option(None, help="Optional output CSV file path")
 ):
     """
     Extract all cards that have the specified tag.
+    Valid columns: _id,id,card_type_id,_fact_id,fact_view_id,question,answer,tags,grade,next_rep,last_rep,easiness,acq_reps,ret_reps,lapses,acq_reps_since_lapse,ret_reps_since_lapse,creation_time,modification_time,extra_data,scheduler_data,active
     """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
+
+    # Determine column projection
+    allowed_columns = [
+        "_id", "id", "card_type_id", "_fact_id", "fact_view_id", "question", "answer", "tags", "grade",
+        "next_rep", "last_rep", "easiness", "acq_reps", "ret_reps", "lapses", "acq_reps_since_lapse",
+        "ret_reps_since_lapse", "creation_time", "modification_time", "extra_data", "scheduler_data", "active",
+    ]
+    if columns.strip().lower() == "all":
+        selected_columns = allowed_columns
+    else:
+        selected_columns = [c.strip() for c in columns.split(",") if c.strip()]
+        invalid = [c for c in selected_columns if c not in allowed_columns]
+        if invalid:
+            print(f"Invalid column(s): {', '.join(invalid)}")
+            print(f"Valid columns are: {', '.join(allowed_columns)}")
+            conn.close()
+            return
+
+    projection = ",".join(selected_columns)
 
     # Support full tag name matching (stored in tags.name)
     cursor.execute("select _id from tags where name=?", (tag,))
@@ -112,8 +133,8 @@ def extract_cards_by_tag(
         return
 
     tag_id = tag_row[0]
-    query = """
-    select cards.* from cards
+    query = f"""
+    select {projection} from cards
     join tags_for_card on cards._id=tags_for_card._card_id
     where tags_for_card._tag_id=?
     """
