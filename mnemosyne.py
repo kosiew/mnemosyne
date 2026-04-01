@@ -92,6 +92,72 @@ def show_buckets(
     conn.close()
 
 @app.command()
+def extract_cards_by_tag(
+    db_path: Path = typer.Option(default=default_db_path, help="Path to the database file"),
+    tag: str = typer.Option(..., help="Tag name to filter cards by"),
+    output_file: Path = typer.Option(None, help="Optional output CSV file path")
+):
+    """
+    Extract all cards that have the specified tag.
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Support full tag name matching (stored in tags.name)
+    cursor.execute("select _id from tags where name=?", (tag,))
+    tag_row = cursor.fetchone()
+    if not tag_row:
+        print(f"No tag found with name '{tag}'")
+        conn.close()
+        return
+
+    tag_id = tag_row[0]
+    query = """
+    select cards.* from cards
+    join tags_for_card on cards._id=tags_for_card._card_id
+    where tags_for_card._tag_id=?
+    """
+    cursor.execute(query, (tag_id,))
+    rows = cursor.fetchall()
+
+    if not rows:
+        print(f"No cards found for tag '{tag}'")
+        conn.close()
+        return
+
+    # Print to stdout
+    column_names = [description[0] for description in cursor.description]
+    print(",".join(column_names))
+    for row in rows:
+        formatted = []
+        for item in row:
+            if item is None:
+                formatted.append("")
+            else:
+                formatted.append(str(item).replace('"', '""'))
+        print(",".join(formatted))
+
+    # Optionally save to CSV
+    if output_file is not None:
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(",".join(column_names) + "\n")
+            for row in rows:
+                formatted = []
+                for item in row:
+                    if item is None:
+                        formatted.append("")
+                    else:
+                        # Quote values that contain commas or newlines
+                        text = str(item)
+                        if "," in text or "\n" in text or '"' in text:
+                            text = '"' + text.replace('"', '""') + '"'
+                        formatted.append(text)
+                f.write(",".join(formatted) + "\n")
+        print(f"Exported {len(rows)} cards to {output_file}")
+
+    conn.close()
+
+@app.command()
 def backup(
     db_path: Path = typer.Option(default_db_path, help="Path to the database file"),
     backups_folder: Path = typer.Option(default_db_path.parent / "backups", help="Path to the backups folder")
