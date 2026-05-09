@@ -42,8 +42,9 @@ illustrating to plugin writers on how to achieve certain functionality.
  * activate_card_on_rollover.py: each night, add an active tag to a number
    of cards.
 
- * random_future_revision.py: on startup, choose one random card from the 20
-   cards with the furthest next repetition date and make it due immediately.
+ * random_future_revision.py: on startup, choose one random card from cards
+   whose next repetition is more than five years away and that have the
+   lowest easiness score, then make it due immediately.
 
 In order to package a plugin for easy installation by the user, just compress
 your .py file and all the other files it requires in a zip file, and change

@@ -9,6 +9,7 @@ from mnemosyne.libmnemosyne.hook import Hook
 from mnemosyne.libmnemosyne.plugin import Plugin
 
 number_of_cards_to_consider = 20
+seconds_in_five_years = 5 * 365 * 24 * 60 * 60
 
 
 class RandomFutureRevisionHook(Hook):
@@ -24,11 +25,12 @@ class RandomFutureRevisionHook(Hook):
         if not scheduler:
             return
 
+        threshold = scheduler.adjusted_now() + seconds_in_five_years
         rows = db.con.execute(
             """select _id from cards
-                where active=1 and grade>=2
-                order by next_rep desc
-                limit ?""", (number_of_cards_to_consider, )).fetchall()
+                where active=1 and grade>=2 and next_rep > ?
+                order by easiness asc, next_rep desc
+                limit ?""", (threshold, number_of_cards_to_consider)).fetchall()
         if not rows:
             return
 
@@ -44,8 +46,9 @@ class RandomFutureRevisionPlugin(Plugin):
 
     name = "Random future revision on startup"
     description = (
-        "On startup, choose a random card from the 20 cards with the "
-        "furthest next repetition date and make it due immediately."
+        "On startup, choose a random card from cards whose next "
+        "repetition is more than five years away and that have the "
+        "lowest easiness, then make it due immediately."
     )
     components = [RandomFutureRevisionHook]
     supported_API_level = 3
