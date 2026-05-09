@@ -256,12 +256,16 @@ class QA_Delegate(QtWidgets.QStyledItemDelegate, Component):
         option.text = ""
         style.drawControl(QtWidgets.QStyle.ControlElement.CE_ItemViewItem, option, painter)
         context = QtGui.QAbstractTextDocumentLayout.PaintContext()
-        # Highlight text if item is selected.
+        # Set text colour from the view palette so HTML renders correctly in
+        # both light and dark themes.
         if option.state & QtWidgets.QStyle.StateFlag.State_Selected:
             painter.fillRect(option.rect, option.palette.highlight())
-            context.palette.setColor(QtGui.QPalette.ColorRole.Text,
-                option.palette.color(QtGui.QPalette.ColorGroup.Active,
-                                     QtGui.QPalette.ColorRole.HighlightedText))
+            text_colour = option.palette.color(QtGui.QPalette.ColorGroup.Active,
+                                               QtGui.QPalette.ColorRole.HighlightedText)
+        else:
+            text_colour = option.palette.color(QtGui.QPalette.ColorGroup.Active,
+                                               QtGui.QPalette.ColorRole.Text)
+        context.palette.setColor(QtGui.QPalette.ColorRole.Text, text_colour)
         rect = style.subElementRect(QtWidgets.QStyle.SubElement.SE_ItemViewItemText,
                                     option, None)
         # Render.
