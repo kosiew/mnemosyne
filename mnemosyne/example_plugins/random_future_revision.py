@@ -33,13 +33,6 @@ class RandomFutureRevisionHook(Hook):
         rows.sort(key=lambda row: row[2], reverse=True)
 
         if not rows:
-            rows = db.con.execute(
-                """select _id, next_rep, last_rep from cards
-                    where active=1 and grade>=2
-                    order by next_rep desc
-                    limit ?""", (number_of_cards_to_consider, )).fetchall()
-            rows.sort(key=lambda row: row[2], reverse=True)
-        if not rows:
             return
 
         card_id = random.choice([row[0] for row in rows])
