@@ -4,6 +4,7 @@
 # repetition time and makes it due immediately when Mnemosyne starts.
 
 import random
+import time
 
 from mnemosyne.libmnemosyne.hook import Hook
 from mnemosyne.libmnemosyne.plugin import Plugin
@@ -23,48 +24,27 @@ class RandomFutureRevisionHook(Hook):
             print("[random_future_revision] database not loaded")
             return
 
-        scheduler = self.scheduler()
-        if not scheduler:
-            print("[random_future_revision] scheduler unavailable")
-            return
-
-        threshold = scheduler.adjusted_now() + seconds_in_five_years
-        print("[random_future_revision] threshold=", threshold)
+        threshold = int(time.time()) + seconds_in_five_years
         rows = db.con.execute(
-            """select _id, next_rep, easiness from cards
+            """select _id from cards
                 where active=1 and grade>=2 and next_rep > ?
                 order by easiness asc, next_rep desc
                 limit ?""", (threshold, number_of_cards_to_consider)).fetchall()
-        print("[random_future_revision] found", len(rows), "cards with next_rep > 5 years")
 
         if not rows:
             rows = db.con.execute(
-                """select _id, next_rep, easiness from cards
+                """select _id from cards
                     where active=1 and grade>=2
                     order by easiness asc, next_rep desc
                     limit ?""", (number_of_cards_to_consider, )).fetchall()
-            print("[random_future_revision] fallback found", len(rows), "cards with grade>=2")
         if not rows:
-            print("[random_future_revision] no eligible cards found")
             return
-
-        for row in rows:
-            print("[random_future_revision] candidate", row)
 
         card_id = random.choice([row[0] for row in rows])
         card = db.card(card_id, is_id_internal=True)
-        print("[random_future_revision] selected card", card_id, "next_rep=", card.next_rep,
-              "easiness=", card.easiness, "grade=", card.grade)
-
         if card.next_rep > 0:
             card.next_rep = 0
             db.update_card(card)
-            print("[random_future_revision] updated card", card_id, "to due now")
-            try:
-                self.controller().reset_study_mode()
-                print("[random_future_revision] reset_study_mode called")
-            except Exception as e:
-                print("[random_future_revision] reset_study_mode failed:", e)
 
 
 class RandomFutureRevisionPlugin(Plugin):
