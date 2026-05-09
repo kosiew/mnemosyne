@@ -93,19 +93,33 @@ class GenericCardTypeWdgt(QtWidgets.QWidget, GenericCardTypeWidget):
     def update_formatting(self, edit_box):
         # Font colour.
         fact_key = self.fact_key_for_edit_box[edit_box]
-        colour = self.config().card_type_property(\
+        font_colour = self.config().card_type_property(\
             "font_colour", self.card_type, fact_key)
-        if colour:
-            edit_box.setTextColor(QtGui.QColor(colour))
         # Background colour.
-        colour = self.config().card_type_property(\
+        background_colour = self.config().card_type_property(\
             "background_colour", self.card_type)
-        if colour:
-            p = QtGui.QPalette()
-            p.setColor(QtGui.QPalette.ColorGroup.Active, 
+        if background_colour:
+            p = edit_box.palette()
+            background = QtGui.QColor(background_colour)
+            p.setColor(QtGui.QPalette.ColorGroup.Active,
                         QtGui.QPalette.ColorRole.Base,
-                        QtGui.QColor(colour))
+                        background)
+            p.setColor(QtGui.QPalette.ColorGroup.Inactive,
+                        QtGui.QPalette.ColorRole.Base,
+                        background)
+            if font_colour:
+                text_colour = QtGui.QColor(font_colour)
+            else:
+                text_colour = self._contrasting_text_colour(background)
+            p.setColor(QtGui.QPalette.ColorGroup.Active,
+                        QtGui.QPalette.ColorRole.Text,
+                        text_colour)
+            p.setColor(QtGui.QPalette.ColorGroup.Inactive,
+                        QtGui.QPalette.ColorRole.Text,
+                        text_colour)
             edit_box.setPalette(p)
+        elif font_colour:
+            edit_box.setTextColor(QtGui.QColor(font_colour))
         # Font.
         font_string = self.config().card_type_property(\
             "font", self.card_type, fact_key)
@@ -113,6 +127,11 @@ class GenericCardTypeWdgt(QtWidgets.QWidget, GenericCardTypeWidget):
             font = QtGui.QFont()
             font.fromString(font_string)
             edit_box.setCurrentFont(font)
+
+    def _contrasting_text_colour(self, background_colour):
+        r, g, b, _ = background_colour.getRgb()
+        luminance = 0.299 * r + 0.587 * g + 0.114 * b
+        return QtGui.QColor("black") if luminance > 186 else QtGui.QColor("white")
 
     def reset_formatting(self):
 
