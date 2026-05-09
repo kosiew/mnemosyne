@@ -31,12 +31,19 @@ class RandomFutureRevisionHook(Hook):
                 where active=1 and grade>=2 and next_rep > ?
                 order by easiness asc, next_rep desc
                 limit ?""", (threshold, number_of_cards_to_consider)).fetchall()
+
+        if not rows:
+            rows = db.con.execute(
+                """select _id from cards
+                    where active=1 and grade>=2
+                    order by easiness asc, next_rep desc
+                    limit ?""", (number_of_cards_to_consider, )).fetchall()
         if not rows:
             return
 
         card_id = random.choice([row[0] for row in rows])
         card = db.card(card_id, is_id_internal=True)
-        due = scheduler.adjusted_now()
+        due = scheduler.adjusted_now() - 1
         if card.next_rep > due:
             card.next_rep = due
             db.update_card(card)
