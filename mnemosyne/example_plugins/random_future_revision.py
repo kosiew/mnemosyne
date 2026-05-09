@@ -26,17 +26,19 @@ class RandomFutureRevisionHook(Hook):
 
         threshold = int(time.time()) + seconds_in_five_years
         rows = db.con.execute(
-            """select _id from cards
+            """select _id, next_rep, easiness from cards
                 where active=1 and grade>=2 and next_rep > ?
-                order by easiness asc, next_rep desc
+                order by next_rep desc
                 limit ?""", (threshold, number_of_cards_to_consider)).fetchall()
+        rows.sort(key=lambda row: row[2])
 
         if not rows:
             rows = db.con.execute(
-                """select _id from cards
+                """select _id, next_rep, easiness from cards
                     where active=1 and grade>=2
-                    order by easiness asc, next_rep desc
+                    order by next_rep desc
                     limit ?""", (number_of_cards_to_consider, )).fetchall()
+            rows.sort(key=lambda row: row[2])
         if not rows:
             return
 
