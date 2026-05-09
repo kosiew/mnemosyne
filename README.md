@@ -72,6 +72,14 @@ If your distribution provides and packages all necessary libraries in a recent e
 First, install all dependencies with your distribution's package manager.
 Then, run `make`, followed by `make run` from the top-level mnemosyne directory.
 This will generate all the needed auxiliary files and start Mnemosyne with a separate datadir under `dot_mnemosyne2`.
+The GUI is launched from `mnemosyne/pyqt_ui/mnemosyne` and uses `dot_mnemosyne2/default.db` as the database file by default.
+If you want to open a different database file, run:
+
+```bash
+PYTHONPATH=. python mnemosyne/pyqt_ui/mnemosyne -d dot_mnemosyne2 /path/to/your/default.db
+```
+
+On macOS, running Mnemosyne without `-d` will use `~/Library/Mnemosyne/default.db` by default.
 If you want to use mnemosyne interactively from within a python shell, run python from the top-level mnemosyne directory.
 You can check if the correct local version was imported by running `import mnemosyne; print(mnemosyne.__file__)`.
 
