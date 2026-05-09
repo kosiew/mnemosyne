@@ -43,10 +43,13 @@ class RandomFutureRevisionHook(Hook):
 
         card_id = random.choice([row[0] for row in rows])
         card = db.card(card_id, is_id_internal=True)
-        due = scheduler.adjusted_now() - 1
-        if card.next_rep > due:
-            card.next_rep = due
+        if card.next_rep > 0:
+            card.next_rep = 0
             db.update_card(card)
+            try:
+                self.controller().reset_study_mode()
+            except Exception:
+                pass
 
 
 class RandomFutureRevisionPlugin(Plugin):
