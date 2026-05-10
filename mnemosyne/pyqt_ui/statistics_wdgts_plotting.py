@@ -50,12 +50,11 @@ class PlotStatisticsWdgt(QtWidgets.QWidget, StatisticsWidget):
         self.canvas.setParent(self)
         self.axes = fig.add_subplot(111)
         self.axes.set_facecolor("white")
-        text_colour = self.parent.palette().color(QtGui.QPalette.ColorRole.Text).name()
-        rcParams['text.color'] = text_colour
-        rcParams['axes.labelcolor'] = text_colour
-        rcParams['xtick.color'] = text_colour
-        rcParams['ytick.color'] = text_colour
-        rcParams['axes.edgecolor'] = text_colour
+        rcParams['text.color'] = "black"
+        rcParams['axes.labelcolor'] = "black"
+        rcParams['xtick.color'] = "black"
+        rcParams['ytick.color'] = "black"
+        rcParams['axes.edgecolor'] = "black"
         self.canvas.updateGeometry()
         if self.config()["ui_language"].lower().startswith("zh"):
             rcParams['font.sans-serif'] = \
