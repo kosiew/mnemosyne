@@ -10,7 +10,6 @@ from mnemosyne.libmnemosyne.hook import Hook
 from mnemosyne.libmnemosyne.plugin import Plugin
 
 number_of_cards_to_consider = 20
-seconds_in_five_years = 5 * 365 * 24 * 60 * 60
 
 
 class RandomFutureRevisionHook(Hook):
@@ -24,12 +23,11 @@ class RandomFutureRevisionHook(Hook):
             print("[random_future_revision] database not loaded")
             return
 
-        threshold = int(time.time()) + seconds_in_five_years
         rows = db.con.execute(
             """select _id, next_rep, last_rep from cards
-                where active=1 and grade>=2 and next_rep > ?
+                where active=1 and grade>=2 
                 order by last_rep desc
-                limit ?""", (threshold, number_of_cards_to_consider)).fetchall()
+                limit ?""", (number_of_cards_to_consider,)).fetchall()
 
         if not rows:
             return
