@@ -28,9 +28,8 @@ class RandomFutureRevisionHook(Hook):
         rows = db.con.execute(
             """select _id, next_rep, last_rep from cards
                 where active=1 and grade>=2 and next_rep > ?
-                order by next_rep desc
+                order by last_rep desc
                 limit ?""", (threshold, number_of_cards_to_consider)).fetchall()
-        rows.sort(key=lambda row: row[2], reverse=True)
 
         if not rows:
             return
