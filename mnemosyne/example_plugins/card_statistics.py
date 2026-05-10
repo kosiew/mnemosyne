@@ -4,7 +4,7 @@
 
 import math
 import time
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from mnemosyne.libmnemosyne.filter import Filter
 from mnemosyne.libmnemosyne.plugin import Plugin
