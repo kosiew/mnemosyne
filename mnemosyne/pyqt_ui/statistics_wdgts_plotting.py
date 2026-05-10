@@ -40,8 +40,7 @@ class PlotStatisticsWdgt(QtWidgets.QWidget, StatisticsWidget):
         self.setMinimumSize(640, 480)
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                            QtWidgets.QSizePolicy.Policy.MinimumExpanding)
-        colour = self._background_colour(self.parent)
-        fig = Figure(facecolor=colour, edgecolor=colour)
+        fig = Figure(facecolor="white", edgecolor="white")
         self.canvas = FigureCanvas(fig)
         self.vbox_layout = QtWidgets.QVBoxLayout(self)
         self.vbox_layout.addWidget(self.canvas)
@@ -50,6 +49,13 @@ class PlotStatisticsWdgt(QtWidgets.QWidget, StatisticsWidget):
                                   QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         self.canvas.setParent(self)
         self.axes = fig.add_subplot(111)
+        self.axes.set_facecolor("white")
+        text_colour = self.parent.palette().color(QtGui.QPalette.ColorRole.Text).name()
+        rcParams['text.color'] = text_colour
+        rcParams['axes.labelcolor'] = text_colour
+        rcParams['xtick.color'] = text_colour
+        rcParams['ytick.color'] = text_colour
+        rcParams['axes.edgecolor'] = text_colour
         self.canvas.updateGeometry()
         if self.config()["ui_language"].lower().startswith("zh"):
             rcParams['font.sans-serif'] = \
