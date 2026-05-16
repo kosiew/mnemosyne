@@ -8,7 +8,7 @@ import time
 from mnemosyne.libmnemosyne.hook import Hook
 from mnemosyne.libmnemosyne.plugin import Plugin
 
-number_of_cards_to_consider = 20
+x = 25
 
 
 class RandomFutureRevisionHook(Hook):
@@ -20,6 +20,13 @@ class RandomFutureRevisionHook(Hook):
         db = self.database()
         if not db or not db.is_loaded():
             print("[random_future_revision] database not loaded")
+            return
+
+        scheduled_count = db.con.execute(
+            """select count(*) from cards
+                where active=1 and grade>=2 and next_rep > 0""").fetchone()[0]
+        if scheduled_count >= x:
+            print(f"[random_future_revision] scheduled revision cards ({scheduled_count}) >= {x}, skipping")
             return
 
         rows = db.con.execute(
