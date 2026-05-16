@@ -9,6 +9,7 @@ from mnemosyne.libmnemosyne.hook import Hook
 from mnemosyne.libmnemosyne.plugin import Plugin
 
 scheduled_threshold = 25
+HOUR = 60 * 60
 
 
 class RandomFutureRevisionHook(Hook):
@@ -22,7 +23,19 @@ class RandomFutureRevisionHook(Hook):
             print("[random_future_revision] database not loaded")
             return
 
-        scheduled_count = db.scheduled_count(self.scheduler().adjusted_now())
+        timestamp = int(time.time())
+        try:
+            day_starts_at = int(self.config()["day_starts_at"])
+        except Exception:
+            day_starts_at = 0
+        timestamp -= day_starts_at * HOUR
+        if time.localtime(timestamp).tm_isdst and time.daylight:
+            timestamp -= time.altzone
+        else:
+            timestamp -= time.timezone
+        adjusted_now = int(timestamp)
+
+        scheduled_count = db.scheduled_count(adjusted_now)
         if scheduled_count >= scheduled_threshold:
             print(f"[random_future_revision] scheduled revision cards ({scheduled_count}) >= {scheduled_threshold}, skipping")
             return
