@@ -22,9 +22,7 @@ class RandomFutureRevisionHook(Hook):
             print("[random_future_revision] database not loaded")
             return
 
-        scheduled_count = db.con.execute(
-            """select count(*) from cards
-                where active=1 and grade>=2 and next_rep > 0""").fetchone()[0]
+        scheduled_count = db.scheduled_count(self.scheduler().adjusted_now())
         if scheduled_count >= scheduled_threshold:
             print(f"[random_future_revision] scheduled revision cards ({scheduled_count}) >= {scheduled_threshold}, skipping")
             return
