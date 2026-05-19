@@ -47,6 +47,17 @@ class GradeButtonIntervalTooltipsPlugin(Plugin):
     }
     supported_API_level = 3
 
+    def activate(self):
+        Plugin.activate(self)
+        if self.database() and self.database().is_loaded():
+            self.controller().reset_study_mode()
+
+    def deactivate(self):
+        deactivated = Plugin.deactivate(self)
+        if deactivated and self.database() and self.database().is_loaded():
+            self.controller().reset_study_mode()
+        return deactivated
+
 
 # Register plugin.
 
