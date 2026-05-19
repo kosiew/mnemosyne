@@ -46,6 +46,9 @@ illustrating to plugin writers on how to achieve certain functionality.
    whose next repetition is more than five years away and that have the
    lowest easiness score, then make it due immediately.
 
+ * grade_button_interval_tooltips.py: adds next-revision interval tooltips
+   to review grade buttons (0-5) when the answer is shown.
+
 In order to package a plugin for easy installation by the user, just compress
 your .py file and all the other files it requires in a zip file, and change
 the extension from .zip to .plugin.
