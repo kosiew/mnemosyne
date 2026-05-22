@@ -22,10 +22,11 @@ class Logger(Component):
         self.upload_thread = None
         self.archive_old_log()
         self.start_logging()
-        if self.config()["upload_science_logs"]:
-            from mnemosyne.libmnemosyne.log_uploader import LogUploader
-            self.upload_thread = LogUploader(self.component_manager)
-            self.upload_thread.start()
+        # Science log uploading is disabled to avoid failed server uploads.
+        # if self.config()["upload_science_logs"]:
+        #     from mnemosyne.libmnemosyne.log_uploader import LogUploader
+        #     self.upload_thread = LogUploader(self.component_manager)
+        #     self.upload_thread.start()
         self.active = True
 
     def get_timestamp(self):

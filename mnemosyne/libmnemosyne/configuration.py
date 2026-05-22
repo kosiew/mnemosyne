@@ -119,7 +119,7 @@ class Configuration(Component, dict):
              "import_flash_dir": self.data_dir,
              "import_plugin_dir": os.path.expanduser("~"),
              "user_id": None,
-             "upload_science_logs": True,
+             "upload_science_logs": False,
              "science_server": "mnemosyne-proj.dyndns.org:80",
              "max_log_size_before_upload": 64000, # For testability.
              "show_daily_tips": True,
