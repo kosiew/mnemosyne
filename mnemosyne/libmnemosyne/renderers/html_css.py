@@ -28,7 +28,7 @@ class HtmlCss(Renderer):
         self._css = {} # {card_type.id: render_args: css}
 
     def body_css(self, **render_args):
-        css = "html, body { margin: 0px; height: 100%;  width: 100%;}\n"
+        css = "html, body { margin: 0px; height: 100%; width: 100%; font-size: 125%; }\n"
         css += "hr { background-color: black; height: 1px; border: 0; }\n"
         return css
 
