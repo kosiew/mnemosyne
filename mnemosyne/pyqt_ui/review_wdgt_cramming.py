@@ -25,7 +25,7 @@ class ReviewWdgtCramming(ReviewWdgt):
         self.unseen = QtWidgets.QLabel("", parent.status_bar)
         self.active = QtWidgets.QLabel("", parent.status_bar)
         self.font = QtGui.QFont()
-        self.font.setPointSize(10)
+        self.font.setPointSize(12)
         self.wrong.setFont(self.font)
         self.unseen.setFont(self.font)
         self.active.setFont(self.font)
