@@ -147,6 +147,9 @@ os.environ["QT_SCALE_FACTOR_ROUNDING_POLICY"] = "PassThrough"
 if options.qt_scale_factor:
     os.environ["QT_SCALE_FACTOR"] = options.qt_scale_factor
 
+from mnemosyne.pyqt_ui.qt_logging import suppress_spurious_qt_pointer_dispatch_logs
+suppress_spurious_qt_pointer_dispatch_logs()
+
 from PyQt6 import QtWebEngineWidgets # Needs to happen first.
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QApplication, QStyleFactory
