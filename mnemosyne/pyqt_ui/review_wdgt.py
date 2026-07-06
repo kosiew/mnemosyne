@@ -3,7 +3,6 @@
 #
 
 import os
-import re
 
 from PyQt6 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from PyQt6.QtMultimedia import QAudioOutput, QMediaPlayer
@@ -109,21 +108,6 @@ class QAOptimalSplit(object):
 
     re_img = re.compile(r"""img src=\"file:///(.+?)\"(.*?)>""",
         re.DOTALL | re.IGNORECASE)
-    re_style_close = re.compile(r"</style>", re.IGNORECASE)
-    re_head_close = re.compile(r"</head>", re.IGNORECASE)
-
-    def add_default_text_colour(self, html):
-        # Keep text readable in dark themes by setting a palette-based
-        # fallback; explicit card styling still takes precedence.
-        text_colour = self.palette().color(QtGui.QPalette.ColorRole.Text).name()
-        css = "body { color: %s; }\n" % text_colour
-        if self.re_style_close.search(html):
-            return self.re_style_close.sub(css + "</style>", html, count=1)
-        if self.re_head_close.search(html):
-            return self.re_head_close.sub(
-                "<style type=\"text/css\">%s</style></head>" % css,
-                html, count=1)
-        return html
 
     def estimate_height(self, html):
         import math
@@ -234,7 +218,7 @@ class QAOptimalSplit(object):
 
     def set_question(self, text):
         #self.main_widget().show_information(text.replace("<", "&lt;"))
-        self.question_text = self.add_default_text_colour(text)
+        self.question_text = text
         #self.question_preview.page().setPreferredContentsSize(\
         #    QtCore.QSize(self.question.size().width(), 1))
         #self.question_preview.setHtml(self.silence_media(text))
@@ -242,7 +226,7 @@ class QAOptimalSplit(object):
 
     def set_answer(self, text):
         #self.main_widget().show_information(text.replace("<", "&lt;"))
-        self.answer_text = self.add_default_text_colour(text)
+        self.answer_text = text
 
         #self.answer_preview.page().setPreferredContentsSize(\
         #    QtCore.QSize(self.answer.size().width(), 1))
