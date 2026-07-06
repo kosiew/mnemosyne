@@ -82,10 +82,12 @@ class CardModel(QtSql.QSqlTableModel, Component):
             card_type_id_index = self.index(index.row(), CARD_TYPE_ID)
             card_type_id = QtSql.QSqlTableModel.data(\
                 self, card_type_id_index)
-            colour = QtGui.QColor(QtCore.Qt.GlobalColor.black)
             if card_type_id in self.font_colour_for_card_type_id:
-                colour = self.font_colour_for_card_type_id[card_type_id]
-            return QtCore.QVariant(colour)
+                return QtCore.QVariant(\
+                    self.font_colour_for_card_type_id[card_type_id])
+            # Keep default palette-driven colors (including dark themes and
+            # selected rows) when no explicit card font color is configured.
+            return super().data(index, role)
         if role == QtCore.Qt.ItemDataRole.BackgroundRole:
             card_type_id_index = self.index(index.row(), CARD_TYPE_ID)
             card_type_id = QtSql.QSqlTableModel.data(\
