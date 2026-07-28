@@ -17,7 +17,7 @@ class RandomFutureRevisionHook(Hook):
     used_for = "after_load"
 
     def run(self):
-        print("[random_future_revision] after_load hook entered")
+        print("[random_future_revision] after_load hook entered.")
         db = self.database()
         if not db or not db.is_loaded():
             print("[random_future_revision] database not loaded")
@@ -36,8 +36,9 @@ class RandomFutureRevisionHook(Hook):
         adjusted_now = int(timestamp)
 
         scheduled_count = db.scheduled_count(adjusted_now)
-        if scheduled_count >= scheduled_threshold:
-            print(f"[random_future_revision] scheduled revision cards ({scheduled_count}) >= {scheduled_threshold}, skipping")
+        print(f"[random_future_revision] scheduled revision cards: {scheduled_count}")
+        if scheduled_count >= scheduled_threshold or scheduled_count < 1:
+            print(f"[random_future_revision] scheduled revision cards ({scheduled_count}) =0 or >= {scheduled_threshold}, skipping")
             return
 
         rows = db.con.execute(
