@@ -8,6 +8,37 @@ from mnemosyne.libmnemosyne.plugin import Plugin
 from mnemosyne.pyqt_ui.review_wdgt import ReviewWdgt
 
 
+DAY = 24 * 60 * 60
+MONTH = 31
+YEAR = 365
+
+
+def format_revision_interval(interval_seconds):
+    days = max(0, int(math.ceil(interval_seconds / DAY)))
+    if days == 0:
+        return "today"
+
+    units = [
+        ("year", YEAR),
+        ("month", MONTH),
+        ("day", 1),
+    ]
+    parts = []
+    for name, size in units:
+        count, days = divmod(days, size)
+        if count:
+            suffix = "" if count == 1 else "s"
+            parts.append(f"{count} {name}{suffix}")
+    return " ".join(parts)
+
+
+def revision_interval_message(interval_seconds):
+    formatted_interval = format_revision_interval(interval_seconds)
+    if formatted_interval == "today":
+        return "Next revision: today."
+    return f"Next revision: in {formatted_interval}."
+
+
 class IntervalTooltipReviewWdgt(ReviewWdgt):
 
     def set_grade_tooltip(self, grade, text):
@@ -15,16 +46,19 @@ class IntervalTooltipReviewWdgt(ReviewWdgt):
         try:
             card = self.review_controller().card
             if card and self.review_controller().is_answer_showing():
-                interval = self.scheduler().process_answer(card, grade, dry_run=True)
-                days = int(math.ceil(interval / (24.0 * 60 * 60)))
-                if days < 0:
-                    days = 0
-                day_text = "day" if days == 1 else "days"
-                tooltip_text = f"{text}\nNext revision: in {days} {day_text}."
+                interval = self.scheduler().grade_answer(card, grade, dry_run=True)
+                tooltip_text = f"{text}\n{revision_interval_message(interval)}"
         except Exception:
             # Keep the default tooltip if the interval cannot be calculated.
             pass
         super().set_grade_tooltip(grade, tooltip_text)
+
+    def grade_answer(self, grade):
+        card = self.review_controller().card
+        super().grade_answer(grade)
+        if card:
+            interval = max(0, card.next_rep - self.scheduler().adjusted_now())
+            print(revision_interval_message(interval))
 
 
 class GradeButtonIntervalTooltipsPlugin(Plugin):
