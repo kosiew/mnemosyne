@@ -14,6 +14,7 @@ _component_managers["test"] = FakeComponentManager()
 try:
     from mnemosyne.example_plugins.grade_button_interval_tooltips import (
         format_revision_interval,
+        reminder_message,
         revision_interval_message,
     )
 finally:
@@ -45,3 +46,16 @@ def test_format_revision_interval(seconds, expected):
 )
 def test_revision_interval_message(seconds, expected):
     assert revision_interval_message(seconds) == expected
+
+
+@pytest.mark.parametrize(
+    ("next_rep", "adjusted_now", "expected"),
+    [
+        (1000, 1000, "Next revision: today."),
+        (1000 + 2 * 24 * 60 * 60, 1000, "Next revision: in 2 days."),
+        # A card that is already overdue still reminds us about today.
+        (0, 33 * 24 * 60 * 60, "Next revision: today."),
+    ],
+)
+def test_reminder_message(next_rep, adjusted_now, expected):
+    assert reminder_message(next_rep, adjusted_now) == expected

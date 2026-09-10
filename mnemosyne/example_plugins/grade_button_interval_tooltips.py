@@ -4,6 +4,8 @@
 
 import math
 
+from PyQt6 import QtWidgets
+
 from mnemosyne.libmnemosyne.plugin import Plugin
 from mnemosyne.pyqt_ui.review_wdgt import ReviewWdgt
 
@@ -39,7 +41,26 @@ def revision_interval_message(interval_seconds):
     return f"Next revision: in {formatted_interval}."
 
 
+def reminder_message(next_rep, adjusted_now):
+
+    """Status bar text telling when the card just graded will show up again."""
+
+    return revision_interval_message(max(0, next_rep - adjusted_now))
+
+
 class IntervalTooltipReviewWdgt(ReviewWdgt):
+
+    def __init__(self, **kwds):
+        super().__init__(**kwds)
+        # Blank until the first grade is given, and afterwards kept until the
+        # next grade replaces it.
+        main_widget = self.main_widget()
+        self.reminder = QtWidgets.QLabel("", main_widget.status_bar)
+        self.reminder.setFont(self.font)
+        main_widget.add_to_status_bar(self.reminder)
+
+    def set_reminder_text(self, text):
+        self.reminder.setText(text)
 
     def set_grade_tooltip(self, grade, text):
         tooltip_text = text
@@ -57,8 +78,8 @@ class IntervalTooltipReviewWdgt(ReviewWdgt):
         card = self.review_controller().card
         super().grade_answer(grade)
         if card:
-            interval = max(0, card.next_rep - self.scheduler().adjusted_now())
-            print(revision_interval_message(interval))
+            self.set_reminder_text(reminder_message(\
+                card.next_rep, self.scheduler().adjusted_now()) + " ")
 
 
 class GradeButtonIntervalTooltipsPlugin(Plugin):
