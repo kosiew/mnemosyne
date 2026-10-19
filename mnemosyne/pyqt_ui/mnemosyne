@@ -169,6 +169,9 @@ if options.qt_opengl:
 a = QApplication(sys.argv)
 a.setApplicationName("Mnemosyne")
 a.setDesktopFileName("mnemosyne")
+# Window icons don't reach the macOS Dock; the application icon does.
+a.setWindowIcon(QtGui.QIcon(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "pixmaps", "mnemosyne.icns")))
 #a.setStyle(QStyleFactory.create("fusion"))
 
 # Get rid of the white menubar on Windows and do some further tweaks.
