@@ -85,7 +85,7 @@ class Template:
 
             # check for cloze
             val = None
-            m = re.match("c[qa]:(\d+):(.+)", section_name)
+            m = re.match(r"c[qa]:(\d+):(.+)", section_name)
             if m:
                 # get full field text
                 txt = get_or_attr(context, m.group(2), None)
@@ -176,7 +176,7 @@ class Template:
                 txt = self.clozeText(txt, extra, mod[1]) if txt and extra else ""
             else:
                 # hook-based field modifier
-                mod, extra = re.search("^(.*?)(?:\((.*)\))?$", mod).groups()
+                mod, extra = re.search(r"^(.*?)(?:\((.*)\))?$", mod).groups()
                 txt = runFilter('fmod_' + mod, txt or '', extra or '', context,
                                 tag, tag_name);
                 if txt is None:
@@ -198,7 +198,7 @@ class Template:
                 return "<span class=cloze>%s</span>" % m.group(1)
         txt = re.sub(reg%ord, repl, txt)
         # and display other clozes normally
-        return re.sub(reg%"\d+", "\\1", txt)
+        return re.sub(reg%r"\d+", "\\1", txt)
 
     @modifier('=')
     def render_delimiter(self, tag_name=None, context=None):

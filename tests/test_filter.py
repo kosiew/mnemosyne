@@ -63,7 +63,7 @@ class TestFilter(MnemosyneTest):
          f = EscapeToHtml(self.mnemosyne.component_manager)
 
          assert f.run("a\nb", None, None) == "a<br>b"
-         assert f.run("<latex>a\nb<\latex>", None, None) == "<latex>a\nb<\latex>"
+         assert f.run("<latex>a\nb<\\latex>", None, None) == "<latex>a\nb<\\latex>"
          
     def test_expand_paths(self):
 

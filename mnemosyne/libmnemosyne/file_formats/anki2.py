@@ -22,7 +22,7 @@ from mnemosyne.libmnemosyne.criteria.default_criterion import \
 from mnemosyne.libmnemosyne.file_formats.media_preprocessor \
     import MediaPreprocessor
 
-sound_re = re.compile("(?i)(\[sound:(?P<fname>[^]]+)\])")
+sound_re = re.compile(r"(?i)(\[sound:(?P<fname>[^]]+)\])")
 
 
 class TagCache(dict, Component):

@@ -7,7 +7,7 @@
 
 import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] \
-        = 'C:\cygwin64\home\Peter\My Project-d2fe488ee997.json'
+        = r'C:\cygwin64\home\Peter\My Project-d2fe488ee997.json'
 
 from mnemosyne.libmnemosyne.plugin import Plugin
 from mnemosyne.libmnemosyne.gui_translator import _

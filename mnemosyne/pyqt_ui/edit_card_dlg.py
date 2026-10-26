@@ -132,7 +132,7 @@ class EditCardDlg(QtWidgets.QDialog, AddEditCards,
     def number_of_anki_clozes_changed(self):
         if not self.card.card_type.id.startswith("7"):
             return False
-        re_cloze = "\{\{c[0-9]+::.*?\}\}"
+        re_cloze = r"\{\{c[0-9]+::.*?\}\}"
         for fact_key in self.card.card_type.fact_keys():
             if fact_key in self.card_type_widget.fact_data():
                 new_content = self.card_type_widget.fact_data()[fact_key]

@@ -90,12 +90,12 @@ def config_py():
   # slashes instead of single slashes here, to have them escaped when Python
   # reads them in.
   latex_preamble = r\"\"\"
-  \documentclass[12pt]{article}
-  \pagestyle{empty}
+  \\documentclass[12pt]{article}
+  \\pagestyle{empty}
   \\begin{document}\"\"\"
 
   # Latex postamble.
-  latex_postamble = r\"\"\"\end{document}\"\"\"
+  latex_postamble = r\"\"\"\\end{document}\"\"\"
 
   # Latex command.
   latex = "latex -interaction=nonstopmode"
