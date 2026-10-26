@@ -26,10 +26,6 @@ class Upgrade1(Component):
             # This is where backup_old_dir put the old data dir.
             old_data_dir = join(home, "Library", "Mnemosyne_1")
         else:
-            try:
-                home = home.decode(locale.getdefaultlocale()[1])
-            except:
-                pass
             old_data_dir = join(home, ".mnemosyne")
         # We split off the rest to a separate function for testability.
         config_file = join(old_data_dir, "config")

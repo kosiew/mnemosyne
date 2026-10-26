@@ -6,11 +6,11 @@ import os
 import re
 import sys
 import time
+import locale
 import sqlite3
 import threading
 import importlib
 import textwrap
-from locale import getdefaultlocale
 
 from mnemosyne.libmnemosyne.gui_translator import _
 from mnemosyne.libmnemosyne.component import Component
@@ -21,6 +21,33 @@ HOUR = 60 * 60 # Seconds in an hour.
 DAY = 24 * HOUR # Seconds in a day.
 
 re_long_int = re.compile(r"\d+L")
+
+def system_locale():
+
+    """Return the OS default locale name like 'en_US', or None.
+
+    Replaces locale.getdefaultlocale(), deprecated since Python 3.11, with
+    the same lookup: Windows asks the OS, other platforms check LC_ALL,
+    LC_CTYPE, LANG and LANGUAGE in that order.
+
+    """
+
+    if sys.platform == "win32":
+        import ctypes
+        return locale.windows_locale.get(
+            ctypes.windll.kernel32.GetUserDefaultLangID())
+    for variable in ("LC_ALL", "LC_CTYPE", "LANG", "LANGUAGE"):
+        localename = os.environ.get(variable)
+        if localename:
+            if variable == "LANGUAGE":
+                localename = localename.split(":")[0]
+            break
+    else:
+        return None
+    code = locale.normalize(localename).split("@")[0]
+    if code in ("C", "UTF-8"):
+        return None
+    return code.split(".")[0]
 
 def config_py():
   return textwrap.dedent(
@@ -481,8 +508,7 @@ class Configuration(Component, dict):
 
         """
         # Use the default OS language settings is possible.
-        # getdefaultlocale is OS independent and works on all platforms.
-        system_language, _ = getdefaultlocale()
+        system_language = system_locale()
         # if no default locale can be found, default to English
         if system_language is None:
             system_language = 'en_us'

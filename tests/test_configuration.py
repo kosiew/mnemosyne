@@ -57,8 +57,8 @@ class TestConfiguration(MnemosyneTest):
                                            'uk', 'fa', 'hu', 'zh_HK', 'es']
             for lang_locale in locale_map_to_test:
                 lang_code, encoding = lang_locale.split(".")
-                with patch('mnemosyne.libmnemosyne.configuration.getdefaultlocale') as mock_locale:
-                    mock_locale.return_value = (lang_code, encoding)
+                with patch('mnemosyne.libmnemosyne.configuration.system_locale') as mock_locale:
+                    mock_locale.return_value = lang_code
                     lang = self.config().default_language()
                     assert lang == locale_map_to_test[lang_locale]
                     mock_locale.assert_called_once()
